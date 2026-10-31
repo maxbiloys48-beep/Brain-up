@@ -21,7 +21,7 @@ main{max-width:760px;margin:auto;padding:15px 14px 100px}.topline{display:flex;j
 button{border:0;cursor:pointer;font:inherit}.improve{margin-top:10px;width:100%;height:58px;border-radius:10px;background:linear-gradient(90deg,#b69b00,#ffdf19);color:#171717;font-weight:900;font-size:18px}.improve:disabled{opacity:.55;cursor:not-allowed}
 .section{margin-top:20px;background:#17171b;border:1px solid #29292e;border-radius:12px;padding:14px}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{font-size:15px;margin:0}.muted{color:var(--muted);font-size:12px}
 .search{width:100%;background:#242429;border:1px solid #38383e;color:white;padding:12px;border-radius:9px;outline:none;margin:6px 0 10px}
-.catalog{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:360px;overflow:auto}.item{background:#222227;border:1px solid #34343a;border-radius:9px;padding:10px;text-align:left;color:white;min-width:0}.item.selected{border-color:var(--yellow);box-shadow:0 0 0 1px #ffd91a55}.item b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item span{color:var(--yellow);font-size:11px}
+.catalog{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:360px;overflow:auto}.item{background:#222227;border:1px solid #34343a;border-radius:9px;padding:9px;text-align:left;color:white;min-width:0}.brain-icon{height:76px;width:100%;display:grid;place-items:center;margin-bottom:7px;border-radius:8px;background:linear-gradient(145deg,#303039,#17171b);overflow:hidden}.brain-icon svg{width:68px;height:68px;image-rendering:pixelated;filter:drop-shadow(0 4px 3px #0008)}.inv-card .brain-icon{height:86px}.item.selected{border-color:var(--yellow);box-shadow:0 0 0 1px #ffd91a55}.item b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item span{color:var(--yellow);font-size:11px}
 .nav{position:fixed;bottom:0;left:0;right:0;background:#17171b;border-top:1px solid #303036;display:flex;justify-content:space-around;padding:10px 4px max(10px,env(safe-area-inset-bottom));z-index:6}.nav button{background:none;color:#777780;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px}.nav button.active{color:var(--yellow)}.nav strong{font-size:22px;line-height:22px}
 .notice{font-size:11px;color:#85858d;line-height:1.4;margin-top:10px}.status{margin-top:10px;text-align:center;color:var(--green);font-size:13px;min-height:18px}
 @media(min-width:600px){.catalog{grid-template-columns:repeat(3,1fr)}.pick{min-height:210px}}
@@ -102,11 +102,20 @@ try { const saved=JSON.parse(localStorage.getItem(STORE_KEY)||"null"); if(saved)
 let source=null, target=null;
 function persist(){ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }
 function money(n){return Number(n||0).toLocaleString("en-US")+" coins";}
+// Original blocky, Roblox-inspired placeholder portraits (not official game artwork).
+function brainIcon(name){
+ let h=0; for(let i=0;i<name.length;i++) h=(h*31+name.charCodeAt(i))>>>0;
+ const colors=["#f05a3c","#e8b52c","#53b7e8","#83c84b","#bb78df","#e77eae","#d7d5cb"];
+ const c=colors[h%colors.length], c2=colors[(h>>>4)%colors.length];
+ const type=h%4;
+ let shape= type===0?'<rect x="23" y="19" width="42" height="43" rx="3"/><rect x="17" y="31" width="8" height="22"/><rect x="63" y="31" width="8" height="22"/>':type===1?'<rect x="27" y="13" width="34" height="50" rx="3"/><rect x="18" y="27" width="9" height="25"/><rect x="61" y="27" width="9" height="25"/>':type===2?'<rect x="20" y="27" width="48" height="35" rx="3"/><rect x="29" y="15" width="30" height="13"/>':'<rect x="24" y="21" width="40" height="42" rx="3"/><path d="M24 24 L12 10 L29 18 M64 24 L76 10 L59 18"/>';
+ return `<div class="brain-icon"><svg viewBox="0 0 88 82" aria-hidden="true"><ellipse cx="44" cy="72" rx="29" ry="5" fill="#000" opacity=".35"/><g fill="${c}" stroke="#111" stroke-width="3" stroke-linejoin="round">${shape}<rect x="29" y="59" width="11" height="12"/><rect x="49" y="59" width="11" height="12"/></g><rect x="31" y="34" width="9" height="10" fill="#fff" stroke="#111" stroke-width="2"/><rect x="49" y="34" width="9" height="10" fill="#fff" stroke="#111" stroke-width="2"/><rect x="34" y="37" width="4" height="6" fill="#171717"/><rect x="52" y="37" width="4" height="6" fill="#171717"/><path d="M37 51h14" stroke="#171717" stroke-width="3"/><path d="M22 25h44" stroke="${c2}" stroke-width="5"/></svg></div>`;
+}
 function renderCatalog(list=catalog){
  $("count").textContent=list.length+" items"; $("catalog").innerHTML="";
  list.forEach(item=>{
   const b=document.createElement("button"); b.className="item"+(target?.name===item.name?" selected":"");
-  b.innerHTML="<b></b><span></span>"; b.querySelector("b").textContent=item.name; b.querySelector("span").textContent=money(item.price);
+  b.innerHTML=brainIcon(item.name)+"<b></b><span></span>"; b.querySelector("b").textContent=item.name; b.querySelector("span").textContent=money(item.price);
   b.onclick=()=>{target=item;updateUpgrade();renderCatalog(list);};
   $("catalog").appendChild(b);
  });
@@ -117,7 +126,7 @@ function renderInventory(){
  $("inventoryEmpty").style.display=state.inventory.length?"none":"block";
  state.inventory.forEach((item,i)=>{
   const b=document.createElement("button"); b.className="inv-card";
-  b.innerHTML="<b></b><span></span>";
+  b.innerHTML=brainIcon(item.name)+"<b></b><span></span>";
   b.querySelector("b").textContent=item.name; b.querySelector("span").textContent=money(item.price);
   b.onclick=()=>{source=item; showPage("upgrade"); updateUpgrade(); $("status").textContent="Выбран предмет: "+item.name;};
   grid.appendChild(b);
