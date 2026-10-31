@@ -25,11 +25,28 @@ button{border:0;cursor:pointer;font:inherit}.improve{margin-top:10px;width:100%;
 .nav{position:fixed;bottom:0;left:0;right:0;background:#17171b;border-top:1px solid #303036;display:flex;justify-content:space-around;padding:10px 4px max(10px,env(safe-area-inset-bottom));z-index:6}.nav button{background:none;color:#777780;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px}.nav button.active{color:var(--yellow)}.nav strong{font-size:22px;line-height:22px}
 .notice{font-size:11px;color:#85858d;line-height:1.4;margin-top:10px}.status{margin-top:10px;text-align:center;color:var(--green);font-size:13px;min-height:18px}
 @media(min-width:600px){.catalog{grid-template-columns:repeat(3,1fr)}.pick{min-height:210px}}
+
+.page{display:none}.page.active{display:block}
+.inventory-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.inv-card{background:#222227;border:1px solid #38383e;border-radius:11px;padding:12px;text-align:left;color:#fff}
+.inv-card b{display:block;font-size:13px;margin-bottom:5px}
+.inv-card span{font-size:11px;color:var(--yellow)}
+.profile-card{background:linear-gradient(145deg,#29291f,#19191d);border:1px solid #484326;border-radius:14px;padding:18px;text-align:center}
+.avatar{width:66px;height:66px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:#39330f;color:var(--yellow);font-size:30px;border:2px solid var(--yellow)}
+.profile-name{font-size:19px;font-weight:900}.profile-level{color:var(--yellow);font-size:12px;margin-top:5px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.stat{background:#222227;border:1px solid #34343a;border-radius:10px;padding:13px}
+.stat b{display:block;font-size:20px;color:var(--yellow)}.stat span{font-size:11px;color:var(--muted)}
+.profile-input{width:100%;background:#242429;border:1px solid #38383e;color:white;padding:12px;border-radius:9px;margin-top:12px}
+.secondary{background:#2a2a30;color:#fff;border:1px solid #414149;padding:11px 13px;border-radius:9px;font-weight:700}
+.empty{padding:24px 12px;text-align:center;color:var(--muted);font-size:13px}
+
 </style>
 </head>
 <body>
 <header><div class="brand"><span class="mark">⌃</span><span>BRAIN-UP</span></div><div class="balance"><b>◈</b> <span id="balance">0</span> 🪙</div></header>
 <main>
+<div class="page active" id="upgradePage">
 <div class="topline"><h1>⌃ UPGRADER</h1><span>DEMO MODE</span></div>
 <div class="wheel-wrap"><div class="wheel" id="wheel"><div class="wheel-inner"><div class="chance" id="chance">0.00%</div><div class="chance-label">upgrade chance</div></div></div></div>
 <div class="picks">
@@ -44,25 +61,79 @@ button{border:0;cursor:pointer;font:inherit}.improve{margin-top:10px;width:100%;
  <div class="catalog" id="catalog"></div>
  <p class="notice">Цены взяты из предоставленного списка. Каталог отсортирован по цене; повторяющиеся названия объединены. В этой демоверсии нет денежных ставок, пополнений или вывода средств.</p>
 </section>
+</div>
 </main>
-<nav class="nav"><button><strong>⚔</strong>Battle</button><button class="active"><strong>⌃</strong>Upgrade</button><button><strong>＋</strong>Coins</button><button><strong>♧</strong>Reward</button><button><strong>♛</strong>VIP</button></nav>
+
+<section class="section page" id="inventoryPage">
+ <div class="section-head"><h2>МОЙ ИНВЕНТАРЬ</h2><span class="muted" id="inventoryCount">0 предметов</span></div>
+ <p class="muted">Здесь хранятся твои игровые Brainrot. Выбери предмет, чтобы использовать его в улучшении.</p>
+ <div class="inventory-grid" id="inventoryGrid"></div>
+ <div class="empty" id="inventoryEmpty">Инвентарь пока пуст. Выигранные предметы появятся здесь.</div>
+ <p class="notice">Это демонстрационная версия: предметы и баланс сохраняются только в этом браузере на устройстве.</p>
+</section>
+<section class="section page" id="profilePage">
+ <div class="profile-card">
+  <div class="avatar" id="profileAvatar">B</div>
+  <div class="profile-name" id="profileName">Игрок BRAIN-UP</div>
+  <div class="profile-level">УРОВЕНЬ 1 · НОВИЧОК</div>
+ </div>
+ <div class="stats">
+  <div class="stat"><b id="profileBalance">0</b><span>Монет</span></div>
+  <div class="stat"><b id="profileItems">0</b><span>Brainrot в инвентаре</span></div>
+  <div class="stat"><b id="profileUpgrades">0</b><span>Попыток улучшения</span></div>
+  <div class="stat"><b id="profileWins">0</b><span>Успешных улучшений</span></div>
+ </div>
+ <section class="section" style="padding:12px;margin-top:12px">
+  <h2>Настройки профиля</h2>
+  <input class="profile-input" id="nicknameInput" maxlength="20" placeholder="Введи игровой ник">
+  <button class="improve" id="saveNickname" style="height:46px;font-size:14px">СОХРАНИТЬ НИК</button>
+  <p class="notice">Профиль демонстрационный. Авторизация Telegram и серверное сохранение будут подключены отдельно.</p>
+ </section>
+</section>
+
+<nav class="nav"><button class="active" data-page="upgrade"><strong>⌃</strong>Upgrade</button><button data-page="inventory"><strong>▣</strong>Inventory</button><button data-page="profile"><strong>♙</strong>Profile</button></nav>
+
 <script>
 const catalog = [{name:'Headless Horseman',price:208000},{name:'Strawberry Elephant',price:41600},{name:'Polaroidini',price:33736},{name:'Signore Carapace',price:25302},{name:'Orchidox',price:22450},{name:'Plant Bros',price:19245},{name:'Meowl',price:17640},{name:'John Pork',price:15960},{name:'Skibidi Toilet',price:14280},{name:'Elefanto Frigo',price:8850},{name:'Arcadragon',price:8330},{name:'Dragon Skeletonini',price:7900},{name:'Love Love Bear',price:6720},{name:'Dragon Gingerini',price:5300},{name:'Antonio',price:5040},{name:'Los Dragons',price:4638},{name:'Griffin',price:4217},{name:'Dragon Aquanini',price:3650},{name:'Cola Cat',price:2970},{name:'Fishino Clownino',price:2277},{name:'Kraken',price:2190},{name:'Digi Narwhal',price:2108},{name:'La Supreme Combinasion',price:2100},{name:'Kalika Bros',price:2066},{name:'Bloodmoon Hammer',price:1855},{name:'Hydra Bunny',price:1589},{name:'Moby Bros',price:1450},{name:'Hydra Dragon',price:1344},{name:'Ginger Gerat',price:1298},{name:'Tirilikalika Tirilikalako',price:1012},{name:'Jelly Moby',price:925},{name:'Pancake and Syrup',price:900},{name:'Dragon Canneloni',price:840},{name:'Bunny and Eggy',price:801},{name:'Grabatron',price:784},{name:'Lazy Ducky',price:674},{name:'Rainbow Hammer',price:597},{name:'Tralalero Base',price:585},{name:'Sammyni Cakini',price:560},{name:'Ketupat Bros',price:527},{name:'Capitano Americano',price:506},{name:'La Casa Boo',price:500},{name:'Los Secret Combinasionas',price:485},{name:'Bumbatron',price:465},{name:'Gorillo Subwoofero',price:438},{name:'Venuspino',price:421},{name:'Gym Bros',price:421},{name:'Rosy and Teddy',price:400},{name:'Rubiko and Kubiko',price:372},{name:'Hydra Serpent',price:360},{name:'La Breakfast Combinasion',price:337},{name:'Rico Dinero',price:333},{name:'Foxini Lanternini',price:330},{name:'Duggy Bros',price:300},{name:'La Craft Machine',price:253},{name:'Dug Dug Dug',price:250},{name:'Los Sekolahs',price:246},{name:'Caylusaurus',price:230},{name:'Los Hotspotsitos',price:230},{name:'Quackini Snackini',price:215},{name:'Fortunu and Cashuru',price:204},{name:'Los Amigos',price:202},{name:'Los Chillis',price:202},{name:'Rhino Helicopterino',price:196},{name:'Los Admins',price:183},{name:'Los Hackers',price:180},{name:'Reinito Sleighito',price:177},{name:'Festive 67',price:168},{name:'Spooky and Pumpky',price:151},{name:'Examen Bros',price:150},{name:'Sammyni Fattini',price:149},{name:'Celestial Pegasus',price:135},{name:'Cerberus',price:135},{name:'Cooki and Milki',price:125},{name:'Hopilikaliko Hopilikalako',price:125},{name:'Chillin Chili',price:122},{name:'La Fuse Machine',price:120},{name:'Fragrama',price:118},{name:'Capitano Moby',price:105},{name:'Guest666',price:102},{name:'Rubrikiko',price:95},{name:"S'more Serat",price:95},{name:'La Food Combinasion',price:87},{name:'Popcuru and Fizzuru',price:85},{name:'Globa Steppa',price:94},{name:'Steakini Fattini',price:94},{name:'Burguro and Fryuro',price:90},{name:'Bloodmoon Slap',price:90},{name:'Yetimatic',price:90},{name:'Santa Sleigh',price:85},{name:'John Doe',price:80},{name:'Las Sis',price:74},{name:'Cloverat Clapat',price:74},{name:'Snailo Clovero',price:72},{name:'Pizza and Ranch',price:71},{name:'Raccooni Jandelini',price:65},{name:'Boppin Bunny',price:63},{name:'Egg Lucky Block',price:63},{name:'Festive Lucky Block',price:62},{name:'Tralaledon',price:59},{name:'Pineaplino',price:53},{name:'Bunny Basket Base',price:51},{name:'Fragola La La La',price:50},{name:'Jolly Jolly Sahur',price:48},{name:'Los Tictacs',price:46},{name:'Garama and Madundung',price:45},{name:'Cash or Card',price:45},{name:'Summer Base',price:45},{name:'Los Spaghettis',price:43},{name:'Cupid Wings',price:42},{name:'La Secret Combinasion',price:41},{name:'Witch Bloom',price:40},{name:'Taco Base',price:40},{name:'Tuff Toucan',price:39},{name:'Lucky Base',price:38},{name:'Eviledon',price:38},{name:'Waverider',price:37},{name:'Pot of Gold Base',price:36},{name:'La Romantic',price:35},{name:'Gold Gold Gold',price:35},{name:'CandySlap',price:34},{name:'Rose Base',price:33},{name:'Christmas Base',price:33},{name:'Ketchuru and Musturu',price:27},{name:'Octo Base',price:27},{name:'Halloween Base',price:26},{name:'Pretzo Robo',price:25},{name:'Gingerbread Base',price:24},{name:'Lava Slap',price:23},{name:'Easter Base',price:23},{name:'Ketupat Kepat',price:22},{name:'Aquatic Base',price:20},{name:'Noo My Loveheart',price:18},{name:'Valentine Base',price:17},{name:'Octo Lucky Block',price:14},{name:'Radioactive Slap',price:13},{name:'Secret Lucky Block',price:13},{name:'67',price:12},{name:'Bee Lucky Block',price:10},{name:'Alien Slap',price:9},{name:'YinYang Slap',price:9},{name:'Los Taco Blocks',price:5},{name:'Los Lucky Block',price:4},{name:'Admin Lucky Block',price:2}];
-const inventory = [];
-let source = null, target = null;
 const $ = id => document.getElementById(id);
-function money(n){return n.toLocaleString("en-US")+" coins"}
-function render(list=catalog){
- $("count").textContent=list.length+" items";
- $("catalog").innerHTML="";
+const STORE_KEY = "brainup_demo_v2";
+let state = {balance:0, inventory:[], nickname:"", attempts:0, wins:0};
+try { const saved=JSON.parse(localStorage.getItem(STORE_KEY)||"null"); if(saved) state={...state,...saved}; } catch(e){}
+let source=null, target=null;
+function persist(){ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }
+function money(n){return Number(n||0).toLocaleString("en-US")+" coins";}
+function renderCatalog(list=catalog){
+ $("count").textContent=list.length+" items"; $("catalog").innerHTML="";
  list.forEach(item=>{
-  const b=document.createElement("button");b.className="item"+(target?.name===item.name?" selected":"");
-  b.innerHTML="<b></b><span></span>";b.querySelector("b").textContent=item.name;b.querySelector("span").textContent=money(item.price);
-  b.onclick=()=>{target=item;update();render(list)};
+  const b=document.createElement("button"); b.className="item"+(target?.name===item.name?" selected":"");
+  b.innerHTML="<b></b><span></span>"; b.querySelector("b").textContent=item.name; b.querySelector("span").textContent=money(item.price);
+  b.onclick=()=>{target=item;updateUpgrade();renderCatalog(list);};
   $("catalog").appendChild(b);
  });
 }
-function update(){
+function renderInventory(){
+ const grid=$("inventoryGrid"); grid.innerHTML="";
+ $("inventoryCount").textContent=state.inventory.length+" предметов";
+ $("inventoryEmpty").style.display=state.inventory.length?"none":"block";
+ state.inventory.forEach((item,i)=>{
+  const b=document.createElement("button"); b.className="inv-card";
+  b.innerHTML="<b></b><span></span>";
+  b.querySelector("b").textContent=item.name; b.querySelector("span").textContent=money(item.price);
+  b.onclick=()=>{source=item; showPage("upgrade"); updateUpgrade(); $("status").textContent="Выбран предмет: "+item.name;};
+  grid.appendChild(b);
+ });
+}
+function renderProfile(){
+ const name=state.nickname || "Игрок BRAIN-UP";
+ $("profileName").textContent=name; $("profileAvatar").textContent=(name.trim()[0]||"B").toUpperCase();
+ $("nicknameInput").value=state.nickname;
+ $("profileBalance").textContent=Number(state.balance||0).toLocaleString("en-US");
+ $("profileItems").textContent=state.inventory.length;
+ $("profileUpgrades").textContent=state.attempts;
+ $("profileWins").textContent=state.wins;
+ $("balance").textContent=Number(state.balance||0).toLocaleString("en-US");
+}
+function updateUpgrade(){
  $("targetName").textContent=target?.name||"Choose target";
  $("targetPrice").textContent=target?money(target.price):"From catalog";
  $("sourceName").textContent=source?.name||"Choose from inventory";
@@ -71,10 +142,31 @@ function update(){
  $("chance").textContent=p.toFixed(2)+"%";
  $("improve").disabled=!(source&&target);
 }
-$("search").addEventListener("input",e=>{const q=e.target.value.toLowerCase();render(catalog.filter(x=>x.name.toLowerCase().includes(q)))});
-$("sourcePick").onclick=()=>{$("status").textContent="В инвентаре пока нет Brainrots. Сначала добавьте предметы в игровую версию.";};
+function showPage(page){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ const targetPage=$(page+"Page"); if(targetPage) targetPage.classList.add("active");
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ if(page==="inventory") renderInventory();
+ if(page==="profile") renderProfile();
+}
+document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+$("search").addEventListener("input",e=>{const q=e.target.value.toLowerCase();renderCatalog(catalog.filter(x=>x.name.toLowerCase().includes(q)));});
+$("sourcePick").onclick=()=>{showPage("inventory");$("status").textContent="Выбери Brainrot в инвентаре.";};
 $("targetPick").onclick=()=>{$("search").focus();$("status").textContent="Выбери цель в каталоге ниже.";};
-$("improve").onclick=()=>{if(!source||!target)return;$("wheel").style.transform="rotate(1080deg)";$("status").textContent="Демо-анимация. Реальная система инвентаря подключается на сервере.";setTimeout(()=>{$("wheel").style.transform="";},2500)};
-render();update();
+$("saveNickname").onclick=()=>{
+ const nick=$("nicknameInput").value.trim().slice(0,20);
+ if(!nick){$("profileName").textContent="Введи ник";return;}
+ state.nickname=nick; persist(); renderProfile();
+};
+$("improve").onclick=()=>{
+ if(!source||!target)return;
+ $("status").textContent="Демо-режим: результат улучшения пока не разыгрывается.";
+ $("wheel").style.transform="rotate(1080deg)";
+ state.attempts++; persist(); renderProfile();
+ setTimeout(()=>{$("wheel").style.transform="";},2500);
+};
+renderCatalog(); updateUpgrade(); renderInventory(); renderProfile();
 </script>
-</body></html>
+
+</body>
+</html>
