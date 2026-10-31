@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#111114">
+<title>BRAIN-UP</title>
+<style>
+:root{--bg:#101013;--panel:#1b1b20;--panel2:#242429;--yellow:#ffd91a;--muted:#92929b;--green:#c6ec42}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 35%,#202024,#0c0c0e 68%);color:#f7f7f8;font-family:Inter,system-ui,Arial,sans-serif}
+header{height:76px;background:#17171b;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #29292e;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:1px;font-size:20px}.mark{color:var(--yellow);font-size:28px;line-height:1}
+.balance{background:#29292e;border:1px solid #45454b;border-radius:13px;padding:10px 12px;color:#fff;font-weight:800}.balance b{color:var(--yellow)}
+main{max-width:760px;margin:auto;padding:15px 14px 100px}.topline{display:flex;justify-content:space-between;align-items:center;margin:12px 4px 22px}.topline h1{font-size:18px;letter-spacing:1px;margin:0}.topline span{color:var(--yellow);font-size:12px;font-weight:800}
+.wheel-wrap{display:flex;justify-content:center;margin:15px auto 24px}.wheel{width:min(78vw,330px);aspect-ratio:1;border-radius:50%;padding:13px;background:conic-gradient(from 180deg,#f04422 0deg,#ffdc16 90deg,#29292e 90deg 270deg,#ffdc16 270deg,#f04422 360deg);box-shadow:0 0 30px #ffd91a22;transition:transform 2.4s cubic-bezier(.12,.75,.18,1)}
+.wheel-inner{height:100%;border-radius:50%;background:radial-gradient(circle,#29292e,#17171a 70%);border:10px solid #111114;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;position:relative}.wheel-inner:after{content:"";position:absolute;bottom:-20px;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:28px solid var(--yellow)}
+.chance{font-size:42px;color:var(--green);font-weight:900}.chance-label{color:#b5d84b;font-size:16px}
+.picks{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pick{background:linear-gradient(145deg,#242429,#17171b);border:1px solid #2c2c32;border-radius:12px;min-height:180px;padding:12px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px}
+.pick small{color:#c5c5ca;font-size:11px}.placeholder{width:100%;height:95px;border-radius:9px;background:radial-gradient(circle,#40380d,#19191d 65%);display:flex;align-items:center;justify-content:center;color:var(--yellow);font-size:42px;font-weight:900}
+.pick strong{font-size:13px}.pick em{font-size:11px;color:var(--muted);font-style:normal}
+button{border:0;cursor:pointer;font:inherit}.improve{margin-top:10px;width:100%;height:58px;border-radius:10px;background:linear-gradient(90deg,#b69b00,#ffdf19);color:#171717;font-weight:900;font-size:18px}.improve:disabled{opacity:.55;cursor:not-allowed}
+.section{margin-top:20px;background:#17171b;border:1px solid #29292e;border-radius:12px;padding:14px}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section h2{font-size:15px;margin:0}.muted{color:var(--muted);font-size:12px}
+.search{width:100%;background:#242429;border:1px solid #38383e;color:white;padding:12px;border-radius:9px;outline:none;margin:6px 0 10px}
+.catalog{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-height:360px;overflow:auto}.item{background:#222227;border:1px solid #34343a;border-radius:9px;padding:10px;text-align:left;color:white;min-width:0}.item.selected{border-color:var(--yellow);box-shadow:0 0 0 1px #ffd91a55}.item b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.item span{color:var(--yellow);font-size:11px}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#17171b;border-top:1px solid #303036;display:flex;justify-content:space-around;padding:10px 4px max(10px,env(safe-area-inset-bottom));z-index:6}.nav button{background:none;color:#777780;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px}.nav button.active{color:var(--yellow)}.nav strong{font-size:22px;line-height:22px}
+.notice{font-size:11px;color:#85858d;line-height:1.4;margin-top:10px}.status{margin-top:10px;text-align:center;color:var(--green);font-size:13px;min-height:18px}
+@media(min-width:600px){.catalog{grid-template-columns:repeat(3,1fr)}.pick{min-height:210px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span class="mark">⌃</span><span>BRAIN-UP</span></div><div class="balance"><b>◈</b> <span id="balance">0</span> 🪙</div></header>
+<main>
+<div class="topline"><h1>⌃ UPGRADER</h1><span>DEMO MODE</span></div>
+<div class="wheel-wrap"><div class="wheel" id="wheel"><div class="wheel-inner"><div class="chance" id="chance">0.00%</div><div class="chance-label">upgrade chance</div></div></div></div>
+<div class="picks">
+ <button class="pick" id="sourcePick"><small>SELECT YOUR BRAINROT</small><div class="placeholder">⌄</div><strong id="sourceName">Choose from inventory</strong><em id="sourcePrice">Inventory is empty</em></button>
+ <button class="pick" id="targetPick"><small>SELECT TARGET BRAINROT</small><div class="placeholder">⌃</div><strong id="targetName">Choose target</strong><em id="targetPrice">From catalog</em></button>
+</div>
+<button class="improve" id="improve" disabled>⌃ &nbsp; IMPROVE</button>
+<div class="status" id="status"></div>
+<section class="section">
+ <div class="section-head"><h2>BRAINROT CATALOG</h2><span class="muted" id="count"></span></div>
+ <input class="search" id="search" placeholder="Search Brainrot..." autocomplete="off">
+ <div class="catalog" id="catalog"></div>
+ <p class="notice">Цены взяты из предоставленного списка. Каталог отсортирован по цене; повторяющиеся названия объединены. В этой демоверсии нет денежных ставок, пополнений или вывода средств.</p>
+</section>
+</main>
+<nav class="nav"><button><strong>⚔</strong>Battle</button><button class="active"><strong>⌃</strong>Upgrade</button><button><strong>＋</strong>Coins</button><button><strong>♧</strong>Reward</button><button><strong>♛</strong>VIP</button></nav>
+<script>
+const catalog = [{name:'Headless Horseman',price:208000},{name:'Strawberry Elephant',price:41600},{name:'Polaroidini',price:33736},{name:'Signore Carapace',price:25302},{name:'Orchidox',price:22450},{name:'Plant Bros',price:19245},{name:'Meowl',price:17640},{name:'John Pork',price:15960},{name:'Skibidi Toilet',price:14280},{name:'Elefanto Frigo',price:8850},{name:'Arcadragon',price:8330},{name:'Dragon Skeletonini',price:7900},{name:'Love Love Bear',price:6720},{name:'Dragon Gingerini',price:5300},{name:'Antonio',price:5040},{name:'Los Dragons',price:4638},{name:'Griffin',price:4217},{name:'Dragon Aquanini',price:3650},{name:'Cola Cat',price:2970},{name:'Fishino Clownino',price:2277},{name:'Kraken',price:2190},{name:'Digi Narwhal',price:2108},{name:'La Supreme Combinasion',price:2100},{name:'Kalika Bros',price:2066},{name:'Bloodmoon Hammer',price:1855},{name:'Hydra Bunny',price:1589},{name:'Moby Bros',price:1450},{name:'Hydra Dragon',price:1344},{name:'Ginger Gerat',price:1298},{name:'Tirilikalika Tirilikalako',price:1012},{name:'Jelly Moby',price:925},{name:'Pancake and Syrup',price:900},{name:'Dragon Canneloni',price:840},{name:'Bunny and Eggy',price:801},{name:'Grabatron',price:784},{name:'Lazy Ducky',price:674},{name:'Rainbow Hammer',price:597},{name:'Tralalero Base',price:585},{name:'Sammyni Cakini',price:560},{name:'Ketupat Bros',price:527},{name:'Capitano Americano',price:506},{name:'La Casa Boo',price:500},{name:'Los Secret Combinasionas',price:485},{name:'Bumbatron',price:465},{name:'Gorillo Subwoofero',price:438},{name:'Venuspino',price:421},{name:'Gym Bros',price:421},{name:'Rosy and Teddy',price:400},{name:'Rubiko and Kubiko',price:372},{name:'Hydra Serpent',price:360},{name:'La Breakfast Combinasion',price:337},{name:'Rico Dinero',price:333},{name:'Foxini Lanternini',price:330},{name:'Duggy Bros',price:300},{name:'La Craft Machine',price:253},{name:'Dug Dug Dug',price:250},{name:'Los Sekolahs',price:246},{name:'Caylusaurus',price:230},{name:'Los Hotspotsitos',price:230},{name:'Quackini Snackini',price:215},{name:'Fortunu and Cashuru',price:204},{name:'Los Amigos',price:202},{name:'Los Chillis',price:202},{name:'Rhino Helicopterino',price:196},{name:'Los Admins',price:183},{name:'Los Hackers',price:180},{name:'Reinito Sleighito',price:177},{name:'Festive 67',price:168},{name:'Spooky and Pumpky',price:151},{name:'Examen Bros',price:150},{name:'Sammyni Fattini',price:149},{name:'Celestial Pegasus',price:135},{name:'Cerberus',price:135},{name:'Cooki and Milki',price:125},{name:'Hopilikaliko Hopilikalako',price:125},{name:'Chillin Chili',price:122},{name:'La Fuse Machine',price:120},{name:'Fragrama',price:118},{name:'Capitano Moby',price:105},{name:'Guest666',price:102},{name:'Rubrikiko',price:95},{name:"S'more Serat",price:95},{name:'La Food Combinasion',price:87},{name:'Popcuru and Fizzuru',price:85},{name:'Globa Steppa',price:94},{name:'Steakini Fattini',price:94},{name:'Burguro and Fryuro',price:90},{name:'Bloodmoon Slap',price:90},{name:'Yetimatic',price:90},{name:'Santa Sleigh',price:85},{name:'John Doe',price:80},{name:'Las Sis',price:74},{name:'Cloverat Clapat',price:74},{name:'Snailo Clovero',price:72},{name:'Pizza and Ranch',price:71},{name:'Raccooni Jandelini',price:65},{name:'Boppin Bunny',price:63},{name:'Egg Lucky Block',price:63},{name:'Festive Lucky Block',price:62},{name:'Tralaledon',price:59},{name:'Pineaplino',price:53},{name:'Bunny Basket Base',price:51},{name:'Fragola La La La',price:50},{name:'Jolly Jolly Sahur',price:48},{name:'Los Tictacs',price:46},{name:'Garama and Madundung',price:45},{name:'Cash or Card',price:45},{name:'Summer Base',price:45},{name:'Los Spaghettis',price:43},{name:'Cupid Wings',price:42},{name:'La Secret Combinasion',price:41},{name:'Witch Bloom',price:40},{name:'Taco Base',price:40},{name:'Tuff Toucan',price:39},{name:'Lucky Base',price:38},{name:'Eviledon',price:38},{name:'Waverider',price:37},{name:'Pot of Gold Base',price:36},{name:'La Romantic',price:35},{name:'Gold Gold Gold',price:35},{name:'CandySlap',price:34},{name:'Rose Base',price:33},{name:'Christmas Base',price:33},{name:'Ketchuru and Musturu',price:27},{name:'Octo Base',price:27},{name:'Halloween Base',price:26},{name:'Pretzo Robo',price:25},{name:'Gingerbread Base',price:24},{name:'Lava Slap',price:23},{name:'Easter Base',price:23},{name:'Ketupat Kepat',price:22},{name:'Aquatic Base',price:20},{name:'Noo My Loveheart',price:18},{name:'Valentine Base',price:17},{name:'Octo Lucky Block',price:14},{name:'Radioactive Slap',price:13},{name:'Secret Lucky Block',price:13},{name:'67',price:12},{name:'Bee Lucky Block',price:10},{name:'Alien Slap',price:9},{name:'YinYang Slap',price:9},{name:'Los Taco Blocks',price:5},{name:'Los Lucky Block',price:4},{name:'Admin Lucky Block',price:2}];
+const inventory = [];
+let source = null, target = null;
+const $ = id => document.getElementById(id);
+function money(n){return n.toLocaleString("en-US")+" coins"}
+function render(list=catalog){
+ $("count").textContent=list.length+" items";
+ $("catalog").innerHTML="";
+ list.forEach(item=>{
+  const b=document.createElement("button");b.className="item"+(target?.name===item.name?" selected":"");
+  b.innerHTML="<b></b><span></span>";b.querySelector("b").textContent=item.name;b.querySelector("span").textContent=money(item.price);
+  b.onclick=()=>{target=item;update();render(list)};
+  $("catalog").appendChild(b);
+ });
+}
+function update(){
+ $("targetName").textContent=target?.name||"Choose target";
+ $("targetPrice").textContent=target?money(target.price):"From catalog";
+ $("sourceName").textContent=source?.name||"Choose from inventory";
+ $("sourcePrice").textContent=source?money(source.price):"Inventory is empty";
+ const p=source&&target?Math.min(100,source.price/target.price*100):0;
+ $("chance").textContent=p.toFixed(2)+"%";
+ $("improve").disabled=!(source&&target);
+}
+$("search").addEventListener("input",e=>{const q=e.target.value.toLowerCase();render(catalog.filter(x=>x.name.toLowerCase().includes(q)))});
+$("sourcePick").onclick=()=>{$("status").textContent="В инвентаре пока нет Brainrots. Сначала добавьте предметы в игровую версию.";};
+$("targetPick").onclick=()=>{$("search").focus();$("status").textContent="Выбери цель в каталоге ниже.";};
+$("improve").onclick=()=>{if(!source||!target)return;$("wheel").style.transform="rotate(1080deg)";$("status").textContent="Демо-анимация. Реальная система инвентаря подключается на сервере.";setTimeout(()=>{$("wheel").style.transform="";},2500)};
+render();update();
+</script>
+</body></html>
