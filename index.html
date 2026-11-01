@@ -167,6 +167,16 @@ $("sendRequest").addEventListener("click",()=>{
  state.requests.push({kind:requestKind,nick,amount,details,createdAt:Date.now(),status:"pending"});persist();renderRequests();$("requestForm").classList.remove("open");$("requestAmount").value="";$("requestDetails").value="";
 });
 function renderProfile(){
+ const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+
+  const user = tg.initDataUnsafe?.user;
+  if (user) {
+    state.nickname = user.first_name || "Игрок";
+  }
+}
  const name=state.nickname || "Игрок BRAIN-UP";
  $("profileName").textContent=name; $("profileAvatar").textContent=(name.trim()[0]||"B").toUpperCase();
  $("nicknameInput").value=state.nickname;
