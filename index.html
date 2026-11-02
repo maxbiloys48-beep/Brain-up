@@ -41,7 +41,36 @@ button{border:0;cursor:pointer;font:inherit}.improve{margin-top:10px;width:100%;
 .profile-input{width:100%;background:#242429;border:1px solid #38383e;color:white;padding:12px;border-radius:9px;margin-top:12px}
 .secondary{background:#2a2a30;color:#fff;border:1px solid #414149;padding:11px 13px;border-radius:9px;font-weight:700}
 .empty{padding:24px 12px;text-align:center;color:var(--muted);font-size:13px}
+ /* BRAIN-UP: исправление каталога */
+html, body {
+    min-height: 100%;
+    height: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
 
+.catalog {
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    padding-bottom: 100px;
+}
+
+.brain-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 120px;
+    overflow: hidden;
+}
+
+.brain-icon svg,
+.brain-icon img {
+    max-width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+}
 </style>
 </head>
 <body>
