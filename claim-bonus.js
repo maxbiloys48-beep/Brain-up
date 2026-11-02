@@ -1,15 +1,12 @@
-import { neon } from "@neondatabase/serverless";
-import { createHmac, timingSafeEqual } from "node:crypto";
-export function db(){const url=process.env.DATABASE_URL;if(!url)throw new Error("Missing DATABASE_URL");return neon(url);}
-export function verifyTelegramInitData(initData){
- const token=process.env.TELEGRAM_BOT_TOKEN;if(!token||!initData)return null;
- const p=new URLSearchParams(initData), hash=p.get("hash");if(!hash)return null;p.delete("hash");
- const age=Date.now()/1000-Number(p.get("auth_date"));if(!Number.isFinite(age)||age< -60||age>86400)return null;
- const check=[...p.entries()].sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>`${k}=${v}`).join("\n");
- const secret=createHmac("sha256","WebAppData").update(token).digest();
- const expected=createHmac("sha256",secret).update(check).digest("hex");
- try{const a=Buffer.from(expected,"hex"),b=Buffer.from(hash,"hex");if(a.length!==b.length||!timingSafeEqual(a,b))return null;}catch{return null;}
- try{const u=JSON.parse(p.get("user")||"null");if(!u||!Number.isSafeInteger(Number(u.id)))return null;return{id:String(u.id),firstName:String(u.first_name||"Игрок").slice(0,64)};}catch{return null;}
+import {db,schema,verifyTelegramInitData,json} from "./_lib.js";
+export default async function handler(req,res){
+ if(req.method!=="POST")return json(res,405,{error:"Method not allowed"});
+ try{const u=verifyTelegramInitData(req.headers["x-telegram-init-data"]);if(!u)return json(res,401,{error:"Telegram authentication failed"});
+ if(!process.env.ADMIN_TELEGRAM_ID||u.id!==String(process.env.ADMIN_TELEGRAM_ID))return json(res,403,{error:"Not authorized"});
+ const sql=db();await schema(sql);
+ await sql`INSERT INTO players(telegram_id,nickname) VALUES(${u.id},${u.firstName}) ON CONFLICT(telegram_id) DO NOTHING`;
+ const rows=await sql`UPDATE players SET balance=balance+20000,bonus_claimed=TRUE,updated_at=NOW() WHERE telegram_id=${u.id} AND bonus_claimed=FALSE RETURNING balance`;
+ if(!rows.length)return json(res,200,{ok:true,alreadyClaimed:true});
+ return json(res,200,{ok:true,awarded:20000,balance:Number(rows[0].balance)});
+ }catch(e){console.error(e);return json(res,500,{error:"Server error"});}
 }
-export async function schema(sql){await sql`CREATE TABLE IF NOT EXISTS players(telegram_id TEXT PRIMARY KEY,nickname TEXT NOT NULL DEFAULT 'Игрок',balance BIGINT NOT NULL DEFAULT 0,bonus_claimed BOOLEAN NOT NULL DEFAULT FALSE,created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`;}
-export function json(res,status,obj){res.status(status).setHeader("Content-Type","application/json; charset=utf-8");res.end(JSON.stringify(obj));}
