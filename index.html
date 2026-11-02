@@ -224,5 +224,47 @@ $("improve").onclick=()=>{
 renderCatalog(); updateUpgrade(); renderInventory(); renderProfile();
 </script>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+ <script>
+(async function connectBRAINUP() {
+    const tg = window.Telegram?.WebApp;
+
+    if (!tg || !tg.initData) {
+        console.log("Открой игру через Telegram");
+        return;
+    }
+
+    tg.ready();
+    tg.expand();
+
+    try {
+        const response = await fetch("/api/profile", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-telegram-init-data": tg.initData
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Ошибка подключения");
+        }
+
+        state.balance = Number(data.balance || 0);
+
+        if (data.nickname) {
+            state.nickname = data.nickname;
+        }
+
+        persist();
+        renderProfile();
+
+        console.log("BRAIN-UP подключён!", data);
+    } catch (error) {
+        console.error("Ошибка BRAIN-UP:", error);
+    }
+})();
+ </script>
 </body>
 </html>
