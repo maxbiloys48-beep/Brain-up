@@ -165,13 +165,23 @@ body { padding-bottom: 88px; }
   <p class="request-note">Это только демонстрация интерфейса: заявка сохраняется на этом устройстве и не отправляется администратору. Здесь нет оплаты, передачи Stars или обмена Roblox-предметов.</p>
  </div>
 </div>
-<nav class="nav"><button class="active" data-page="upgrade"><strong>⌃</strong>Upgrade</button><button data-page="inventory"><strong>▣</strong>Inventory</button><button data-page="profile"><strong>♙</strong>Profile</button></nav>
-
+<nav class="nav">
+<button class="active" data-page="upgrade"><strong>⌃</strong>Upgrade</button>
+<button data-page="shop"><strong>🛒</strong>SHOP</button>
+<button data-page="inventory"><strong>▣</strong>Inventory</button>
+<button data-page="profile"><strong>♙</strong>Profile</button>
+</nav>
 <script>
 const catalog = [{name:'Headless Horseman',price:208000},{name:'Strawberry Elephant',price:41600},{name:'Polaroidini',price:33736},{name:'Signore Carapace',price:25302},{name:'Orchidox',price:22450},{name:'Plant Bros',price:19245},{name:'Meowl',price:17640},{name:'John Pork',price:15960},{name:'Skibidi Toilet',price:14280},{name:'Elefanto Frigo',price:8850},{name:'Arcadragon',price:8330},{name:'Dragon Skeletonini',price:7900},{name:'Love Love Bear',price:6720},{name:'Dragon Gingerini',price:5300},{name:'Antonio',price:5040},{name:'Los Dragons',price:4638},{name:'Griffin',price:4217},{name:'Dragon Aquanini',price:3650},{name:'Cola Cat',price:2970},{name:'Fishino Clownino',price:2277},{name:'Kraken',price:2190},{name:'Digi Narwhal',price:2108},{name:'La Supreme Combinasion',price:2100},{name:'Kalika Bros',price:2066},{name:'Bloodmoon Hammer',price:1855},{name:'Hydra Bunny',price:1589},{name:'Moby Bros',price:1450},{name:'Hydra Dragon',price:1344},{name:'Ginger Gerat',price:1298},{name:'Tirilikalika Tirilikalako',price:1012},{name:'Jelly Moby',price:925},{name:'Pancake and Syrup',price:900},{name:'Dragon Canneloni',price:840},{name:'Bunny and Eggy',price:801},{name:'Grabatron',price:784},{name:'Lazy Ducky',price:674},{name:'Rainbow Hammer',price:597},{name:'Tralalero Base',price:585},{name:'Sammyni Cakini',price:560},{name:'Ketupat Bros',price:527},{name:'Capitano Americano',price:506},{name:'La Casa Boo',price:500},{name:'Los Secret Combinasionas',price:485},{name:'Bumbatron',price:465},{name:'Gorillo Subwoofero',price:438},{name:'Venuspino',price:421},{name:'Gym Bros',price:421},{name:'Rosy and Teddy',price:400},{name:'Rubiko and Kubiko',price:372},{name:'Hydra Serpent',price:360},{name:'La Breakfast Combinasion',price:337},{name:'Rico Dinero',price:333},{name:'Foxini Lanternini',price:330},{name:'Duggy Bros',price:300},{name:'La Craft Machine',price:253},{name:'Dug Dug Dug',price:250},{name:'Los Sekolahs',price:246},{name:'Caylusaurus',price:230},{name:'Los Hotspotsitos',price:230},{name:'Quackini Snackini',price:215},{name:'Fortunu and Cashuru',price:204},{name:'Los Amigos',price:202},{name:'Los Chillis',price:202},{name:'Rhino Helicopterino',price:196},{name:'Los Admins',price:183},{name:'Los Hackers',price:180},{name:'Reinito Sleighito',price:177},{name:'Festive 67',price:168},{name:'Spooky and Pumpky',price:151},{name:'Examen Bros',price:150},{name:'Sammyni Fattini',price:149},{name:'Celestial Pegasus',price:135},{name:'Cerberus',price:135},{name:'Cooki and Milki',price:125},{name:'Hopilikaliko Hopilikalako',price:125},{name:'Chillin Chili',price:122},{name:'La Fuse Machine',price:120},{name:'Fragrama',price:118},{name:'Capitano Moby',price:105},{name:'Guest666',price:102},{name:'Rubrikiko',price:95},{name:"S'more Serat",price:95},{name:'La Food Combinasion',price:87},{name:'Popcuru and Fizzuru',price:85},{name:'Globa Steppa',price:94},{name:'Steakini Fattini',price:94},{name:'Burguro and Fryuro',price:90},{name:'Bloodmoon Slap',price:90},{name:'Yetimatic',price:90},{name:'Santa Sleigh',price:85},{name:'John Doe',price:80},{name:'Las Sis',price:74},{name:'Cloverat Clapat',price:74},{name:'Snailo Clovero',price:72},{name:'Pizza and Ranch',price:71},{name:'Raccooni Jandelini',price:65},{name:'Boppin Bunny',price:63},{name:'Egg Lucky Block',price:63},{name:'Festive Lucky Block',price:62},{name:'Tralaledon',price:59},{name:'Pineaplino',price:53},{name:'Bunny Basket Base',price:51},{name:'Fragola La La La',price:50},{name:'Jolly Jolly Sahur',price:48},{name:'Los Tictacs',price:46},{name:'Garama and Madundung',price:45},{name:'Cash or Card',price:45},{name:'Summer Base',price:45},{name:'Los Spaghettis',price:43},{name:'Cupid Wings',price:42},{name:'La Secret Combinasion',price:41},{name:'Witch Bloom',price:40},{name:'Taco Base',price:40},{name:'Tuff Toucan',price:39},{name:'Lucky Base',price:38},{name:'Eviledon',price:38},{name:'Waverider',price:37},{name:'Pot of Gold Base',price:36},{name:'La Romantic',price:35},{name:'Gold Gold Gold',price:35},{name:'CandySlap',price:34},{name:'Rose Base',price:33},{name:'Christmas Base',price:33},{name:'Ketchuru and Musturu',price:27},{name:'Octo Base',price:27},{name:'Halloween Base',price:26},{name:'Pretzo Robo',price:25},{name:'Gingerbread Base',price:24},{name:'Lava Slap',price:23},{name:'Easter Base',price:23},{name:'Ketupat Kepat',price:22},{name:'Aquatic Base',price:20},{name:'Noo My Loveheart',price:18},{name:'Valentine Base',price:17},{name:'Octo Lucky Block',price:14},{name:'Radioactive Slap',price:13},{name:'Secret Lucky Block',price:13},{name:'67',price:12},{name:'Bee Lucky Block',price:10},{name:'Alien Slap',price:9},{name:'YinYang Slap',price:9},{name:'Los Taco Blocks',price:5},{name:'Los Lucky Block',price:4},{name:'Admin Lucky Block',price:2}];
 const $ = id => document.getElementById(id);
 const STORE_KEY = "brainup_demo_v2";
-let state = {balance:0, inventory:[], nickname:"", attempts:0, wins:0};
+let state = {
+ balance: 50000,
+ inventory: [],
+ nickname: "",
+ attempts: 0,
+ wins: 0
+};
 try { const saved=JSON.parse(localStorage.getItem(STORE_KEY)||"null"); if(saved) state={...state,...saved}; } catch(e){}
 let source=null, target=null, requestKind="";
 state.requests = Array.isArray(state.requests) ? state.requests : [];
@@ -246,7 +256,7 @@ if (tg) {
  $("profileWins").textContent=state.wins;
  $("balance").textContent=Number(state.balance||0).toLocaleString("en-US");
 }
-let selectedMultiplier = 2;
+let selectedMultiplier = 2;ш
 let selectedChance = 20;
 function updateUpgrade(){
  $("targetName").textContent=target?.name||"Choose target";
