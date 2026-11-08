@@ -266,11 +266,55 @@ function updateUpgrade(){
 
  $("improve").disabled=!(source&&target);
 }
+  function renderShop(){
+  const grid = $("shopGrid");
+  if(!grid) return;
+
+  grid.innerHTML = "";
+
+  catalog.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "inv-card";
+
+    card.innerHTML = `
+      ${brainIcon(item.name)}
+      <b></b>
+      <span></span>
+      <button class="shop-buy">КУПИТЬ</button>
+    `;
+
+    card.querySelector("b").textContent = item.name;
+    card.querySelector("span").textContent = money(item.price);
+
+    card.querySelector(".shop-buy").onclick = () => {
+      if(state.balance < item.price){
+        alert("Недостаточно монет!");
+        return;
+      }
+
+      state.balance -= item.price;
+      state.inventory.push({
+        name: item.name,
+        price: item.price
+      });
+
+      persist();
+      renderShop();
+      renderInventory();
+      renderProfile();
+
+      alert("Ты купил " + item.name + "!");
+    };
+
+    grid.appendChild(card);
+  });
+  }
 function showPage(page){
  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
  const targetPage=$(page+"Page"); if(targetPage) targetPage.classList.add("active");
  document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
  if(page==="inventory") renderInventory();
+  if(page==="shop") renderShop();
  if(page==="profile") renderProfile();
 }
 document.querySelectorAll(".nav button").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
