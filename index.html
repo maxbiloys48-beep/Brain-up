@@ -1,322 +1,182 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Brainrot Upgrader TMA</title>
-    <script src="https://telegram.org"></script>
-    <style>
-        :root {
-            --bg-color: #12121a;
-            --card-bg: #1e1e2e;
-            --accent: #ff007f;
-            --neon: #00f0ff;
-            --win: #00ff88;
-            --gold: #ffd700;
-        }
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        body {
-            background-color: var(--bg-color);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .header {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            gap: 8px;
-        }
-        h1 {
-            font-size: 17px;
-            margin: 0;
-            color: var(--accent);
-            text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
-        }
-        .badges {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-        .balance-badge {
-            font-size: 13px;
-            background: #252538;
-            border: 1px solid var(--gold);
-            padding: 5px 10px;
-            border-radius: 20px;
-            color: var(--gold);
-            font-weight: bold;
-        }
-        .user-badge {
-            font-size: 12px;
-            background: var(--card-bg);
-            padding: 5px 8px;
-            border-radius: 20px;
-            color: var(--neon);
-            font-weight: bold;
-            max-width: 90px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        #status {
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            min-height: 20px;
-            margin-bottom: 8px;
-        }
-        .arena {
-            width: 100%;
-            background: var(--card-bg);
-            padding: 14px 10px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-        .slot {
-            flex: 1;
-            height: 130px;
-            border: 2px dashed #444;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 6px;
-            background: #161622;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .slot.active {
-            border: 2px solid var(--neon);
-        }
-        .wheel-container {
-            position: relative;
-            width: 112px;
-            height: 112px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .wheel {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(#2a2a3d 0% 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .wheel-inner {
-            width: 84px;
-            height: 84px;
-            background: var(--card-bg);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-        .pointer {
-            position: absolute;
-            top: -8px;
-            width: 0;
-            height: 0;
-            border-left: 7px solid transparent;
-            border-right: 7px solid transparent;
-            border-top: 13px solid var(--accent);
-            z-index: 3;
-            transform-origin: 50% 64px;
-            transition: transform 3s cubic-bezier(0.15, 0.85, 0.25, 1);
-        }
-        .chance-presets {
-            width: 100%;
-            display: flex;
-            gap: 6px;
-            margin-top: 10px;
-        }
-        .preset-btn {
-            flex: 1;
-            background: var(--card-bg);
-            border: 1px solid #333;
-            color: #fff;
-            padding: 9px 0;
-            border-radius: 8px;
-            font-size: 12px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        .preset-btn:active {
-            background: #2e2e46;
-            border-color: var(--neon);
-        }
-        .upgrade-btn {
-            width: 100%;
-            background: linear-gradient(45deg, var(--accent), #7000ff);
-            border: none;
-            color: white;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 12px;
-            margin-top: 10px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.4);
-        }
-        .upgrade-btn:disabled {
-            opacity: 0.4;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-        .tabs {
-            display: flex;
-            width: 100%;
-            gap: 6px;
-            margin-top: 14px;
-        }
-        .tab {
-            flex: 1;
-            padding: 10px 4px;
-            background: var(--card-bg);
-            border: none;
-            color: #aaa;
-            font-weight: bold;
-            border-radius: 10px;
-            font-size: 12px;
-            cursor: pointer;
-        }
-        .tab.active {
-            background: #2c2c44;
-            color: #fff;
-            border-bottom: 2px solid var(--neon);
-        }
-        .grid {
-            width: 100%;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-            padding-bottom: 20px;
-        }
-        .card {
-            background: var(--card-bg);
-            padding: 10px 6px;
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid transparent;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-        .card.selected {
-            border-color: var(--neon);
-            background: #252538;
-        }
-        .emoji { font-size: 28px; display: block; margin-bottom: 4px; }
-        .price { color: var(--win); font-weight: bold; font-size: 11px; display: block; margin-top: 2px; }
-        .card-btn {
-            margin-top: 6px;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 4px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        .buy-btn {
-            background: var(--gold);
-            color: #12121a;
-        }
-        .sell-btn {
-            background: #2e2e46;
-            color: #ff6b8b;
-            border: 1px solid #444;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Апгрейдер Брейнротов</title>
+<style>
+  body { font-family: 'Segoe UI', sans-serif; background: #12121a; color: #fff; text-align: center; margin: 0; padding: 20px; }
+  .card { background: #1e1e2e; border-radius: 20px; padding: 25px; max-width: 450px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 2px solid #333; }
+  .emoji { font-size: 90px; margin: 10px 0; transition: transform 0.1s; cursor: pointer; user-select: none; }
+  .emoji:active { transform: scale(0.9); }
+  .stats { font-size: 18px; margin: 15px 0; background: #27273a; padding: 15px; border-radius: 12px; }
+  .money { font-size: 32px; font-weight: bold; color: #4ade80; }
+  button { width: 100%; padding: 14px; margin: 8px 0; font-size: 16px; font-weight: bold; border: none; border-radius: 12px; cursor: pointer; transition: 0.2s; color: white; }
+  button:hover { filter: brightness(1.15); }
+  button:disabled { background: #444 !important; cursor: not-allowed; opacity: 0.6; }
+  .btn-lvl { background: #3b82f6; }
+  .btn-mut { background: #a855f7; }
+  .btn-rar { background: #f59e0b; }
+  .btn-reb { background: #ef4444; }
+  #log { margin-top: 15px; font-size: 15px; color: #fbbf24; min-height: 24px; }
+</style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>🧠 BRAINROT UP</h1>
-        <div class="badges">
-            <div class="balance-badge">💰 <span id="balanceText">20000</span></div>
-            <div class="user-badge" id="userName">Игрок</div>
-        </div>
-    </div>
+<div class="card">
+  <h1>🧠 Апгрейдер Брейнротов</h1>
+  <div class="money">$<span id="money">100</span></div>
+  <div>Доход: <b>$<span id="income">10</span>/сек</b> (клик: +$<span id="clickVal">10</span>)</div>
 
-    <div id="status">Выбери предмет из инвентаря и цель!</div>
+  <div class="emoji" id="petEmoji" onclick="clickPet()">🍕</div>
+  <h2 id="petName">Нубини Пиццанини</h2>
 
-    <div class="arena">
-        <div class="slot" id="mySlot">
-            <span>Твой<br>брейнрот</span>
-        </div>
+  <div class="stats">
+    <div>Редкость: <b id="rarity" style="color:#9ca3af">Обычный</b></div>
+    <div>Мутация: <b id="mutation">Обычная (x1)</b></div>
+    <div>Уровень: <b id="level">1</b> | Перерождения: <b id="rebirth">x1</b></div>
+  </div>
 
-        <div class="wheel-container">
-            <div class="pointer" id="pointer"></div>
-            <div class="wheel" id="wheel">
-                <div class="wheel-inner">
-                    <span id="chanceText" style="font-size: 18px; font-weight: bold;">0%</span>
-                    <span style="font-size: 9px; color: #aaa;">ШАНС</span>
-                </div>
-            </div>
-        </div>
+  <button class="btn-lvl" id="btnLvl" onclick="upgradeLevel()">⬆️ Прокачать уровень ($50)</button>
+  <button class="btn-mut" id="btnMut" onclick="spinMutation()">🎲 Колесо мутаций ($250)</button>
+  <button class="btn-rar" id="btnRar" onclick="upgradeRarity()">⚗️ Крафт-машина: Апгрейд редкости ($400)</button>
+  <button class="btn-reb" id="btnReb" onclick="doRebirth()">🔥 Перерождение ($10,000)</button>
 
-        <div class="slot" id="targetSlot">
-            <span>Цель<br>апгрейда</span>
-        </div>
-    </div>
+  <div id="log">Кликай по брейнроту, чтобы фармить быстрее!</div>
+</div>
 
-    <div class="chance-presets">
-        <button type="button" class="preset-btn" data-chance="75">~75%</button>
-        <button type="button" class="preset-btn" data-chance="50">~50%</button>
-        <button type="button" class="preset-btn" data-chance="25">~25%</button>
-        <button type="button" class="preset-btn" data-chance="10">~10%</button>
-    </div>
+<script>
+  const pets = [
+    { name: "Нубини Пиццанини", emoji: "🍕", rarity: "Обычный", color: "#9ca3af" },
+    { name: "Тралалеро Тралала", emoji: "🦈", rarity: "Редкий", color: "#3b82f6" },
+    { name: "Бомбардиро Крокодило", emoji: "🐊", rarity: "Эпический", color: "#a855f7" },
+    { name: "Балерина Капучина", emoji: "☕", rarity: "Легендарный", color: "#f59e0b" },
+    { name: "Тунг Тунг Сахур", emoji: "🪵", rarity: "Мифический", color: "#ef4444" },
+    { name: "Секретный Сигма", emoji: "🗿", rarity: "Секретный", color: "#ec4899" },
+    { name: "OG Гигачад", emoji: "👑", rarity: "OG", color: "#fde047" }
+  ];
 
-    <button type="button" class="upgrade-btn" id="upgradeBtn" disabled>АПГРЕЙДНУТЬ</button>
+  const mutations = [
+    { name: "Обычная", mult: 1, weight: 40 },
+    { name: "Золотая", mult: 2, weight: 30 },
+    { name: "Алмазная", mult: 5, weight: 18 },
+    { name: "Радужная", mult: 10, weight: 9 },
+    { name: "Галактическая", mult: 25, weight: 3 }
+  ];
 
-    <div class="tabs">
-        <button type="button" class="tab active" id="tabInv" data-tab="inv">🎒 Инвентарь (<span id="invCount">0</span>)</button>
-        <button type="button" class="tab" id="tabCat" data-tab="cat">🎯 Цели</button>
-        <button type="button" class="tab" id="tabShop" data-tab="shop">🛒 Магазин</button>
-    </div>
+  let money = 100;
+  let petIdx = 0;
+  let mutIdx = 0;
+  let level = 1;
+  let rebirthMult = 1;
 
-    <div class="grid" id="itemsGrid"></div>
+  function getIncome() {
+    return Math.floor((10 * Math.pow(2.8, petIdx)) * level * mutations[mutIdx].mult * rebirthMult);
+  }
 
-    <script>
-        const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-        if (tg) {
-            tg.expand();
-            tg.ready();
-            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                document.getElementById('userName').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
-            }
-        }
+  function updateUI() {
+    const inc = getIncome();
+    const lvlCost = Math.floor(50 * Math.pow(1.4, level - 1));
+    const rarCost = 400 * Math.pow(3, petIdx);
+    const rebCost = 10000 * rebirthMult;
 
-        const catalog = [
-            { id: 1, name: "Скибиди", emoji: "🚽", price: 100 },
-            { id: 2, name: "Сигма", emoji: "🗿", price: 250 },
-            { id: 3, name: "Тралалело", emoji: "🦈", price: 500 },
-            { id: 4, name: "Крокодило", emoji: "🐊", price: 1000 },
-            
+    document.getElementById("money").innerText = money.toLocaleString();
+    document.getElementById("income").innerText = inc.toLocaleString();
+    document.getElementById("clickVal").innerText = inc.toLocaleString();
+    
+    document.getElementById("petEmoji").innerText = pets[petIdx].emoji;
+    document.getElementById("petName").innerText = pets[petIdx].name;
+    
+    const rarEl = document.getElementById("rarity");
+    rarEl.innerText = pets[petIdx].rarity;
+    rarEl.style.color = pets[petIdx].color;
+
+    document.getElementById("mutation").innerText = `${mutations[mutIdx].name} (x${mutations[mutIdx].mult})`;
+    document.getElementById("level").innerText = level;
+    document.getElementById("rebirth").innerText = "x" + rebirthMult;
+
+    document.getElementById("btnLvl").innerText = `⬆️ Прокачать уровень ($${lvlCost.toLocaleString()})`;
+    document.getElementById("btnLvl").disabled = money < lvlCost;
+
+    document.getElementById("btnMut").disabled = money < 250;
+
+    if (petIdx >= pets.length - 1) {
+      document.getElementById("btnRar").innerText = "⚗️ Максимальная редкость (OG)!";
+      document.getElementById("btnRar").disabled = true;
+    } else {
+      document.getElementById("btnRar").innerText = `⚗️ Крафт-машина: Шанс 65% ($${rarCost.toLocaleString()})`;
+      document.getElementById("btnRar").disabled = money < rarCost;
+    }
+
+    document.getElementById("btnReb").innerText = `🔥 Перерождение ($${rebCost.toLocaleString()})`;
+    document.getElementById("btnReb").disabled = money < rebCost;
+  }
+
+  function log(msg) {
+    document.getElementById("log").innerText = msg;
+  }
+
+  function clickPet() {
+    money += getIncome();
+    updateUI();
+  }
+
+  function upgradeLevel() {
+    const cost = Math.floor(50 * Math.pow(1.4, level - 1));
+    if (money >= cost) {
+      money -= cost;
+      level++;
+      log("Уровень повышен!");
+      updateUI();
+    }
+  }
+
+  function spinMutation() {
+    if (money >= 250) {
+      money -= 250;
+      const totalWeight = mutations.reduce((s, m) => s + m.weight, 0);
+      let r = Math.random() * totalWeight;
+      for (let i = 0; i < mutations.length; i++) {
+        if (r < mutations[i].weight) { mutIdx = i; break; }
+        r -= mutations[i].weight;
+      }
+      log(`Выпала мутация: ${mutations[mutIdx].name} (x${mutations[mutIdx].mult})!`);
+      updateUI();
+    }
+  }
+
+  function upgradeRarity() {
+    const cost = 400 * Math.pow(3, petIdx);
+    if (money >= cost && petIdx < pets.length - 1) {
+      money -= cost;
+      if (Math.random() < 0.65) {
+        petIdx++;
+        log(`УСПЕХ! Новый брейнрот: ${pets[petIdx].name}!`);
+      } else {
+        log("💥 Крафт-машина взорвалась! Редкость не изменилась.");
+      }
+      updateUI();
+    }
+  }
+
+  function doRebirth() {
+    const cost = 10000 * rebirthMult;
+    if (money >= cost) {
+      money = 100;
+      petIdx = 0;
+      mutIdx = 0;
+      level = 1;
+      rebirthMult *= 2;
+      log(`🔥 ПЕРЕРОЖДЕНИЕ! Постоянный множитель теперь x${rebirthMult}!`);
+      updateUI();
+    }
+  }
+
+  setInterval(() => {
+    money += getIncome();
+    updateUI();
+  }, 1000);
+
+  updateUI();
+</script>
+</body>
+</html>
