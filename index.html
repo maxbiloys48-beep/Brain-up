@@ -2,48 +2,115 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Brainrot Upgrader 3000</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Brainrot Upgrader TMA</title>
+    <script src="https://telegram.org"></script>
     <style>
+        :root {
+            --bg-color: #12121a;
+            --card-bg: #1e1e2e;
+            --accent: #ff007f;
+            --neon: #00f0ff;
+            --win: #00ff88;
+            --gold: #ffd700;
+        }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
         body {
-            background-color: #12121a;
+            background-color: var(--bg-color);
             color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin: 0;
-            padding: 20px;
+            min-height: 100vh;
         }
-        h1 { color: #ff007f; text-shadow: 0 0 10px #ff007f; }
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            gap: 8px;
+        }
+        h1 {
+            font-size: 17px;
+            margin: 0;
+            color: var(--accent);
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.6);
+        }
+        .badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .balance-badge {
+            font-size: 13px;
+            background: #252538;
+            border: 1px solid var(--gold);
+            padding: 5px 10px;
+            border-radius: 20px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+        .user-badge {
+            font-size: 12px;
+            background: var(--card-bg);
+            padding: 5px 8px;
+            border-radius: 20px;
+            color: var(--neon);
+            font-weight: bold;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #status {
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            min-height: 20px;
+            margin-bottom: 8px;
+        }
         .arena {
+            width: 100%;
+            background: var(--card-bg);
+            padding: 14px 10px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 40px;
-            background: #1e1e2e;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
+            justify-content: space-between;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         .slot {
-            width: 160px;
-            height: 200px;
+            flex: 1;
+            height: 130px;
             border: 2px dashed #444;
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 10px;
+            padding: 6px;
             background: #161622;
+            font-size: 12px;
+            cursor: pointer;
         }
-        .slot.active { border: 2px solid #00f0ff; }
+        .slot.active {
+            border: 2px solid var(--neon);
+        }
         .wheel-container {
             position: relative;
-            width: 180px;
-            height: 180px;
+            width: 112px;
+            height: 112px;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -52,16 +119,15 @@
             width: 100%;
             height: 100%;
             border-radius: 50%;
-            background: conic-gradient(#00ff88 0% 50%, #2a2a3d 50% 100%);
+            background: conic-gradient(#2a2a3d 0% 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
         }
         .wheel-inner {
-            width: 140px;
-            height: 140px;
-            background: #1e1e2e;
+            width: 84px;
+            height: 84px;
+            background: var(--card-bg);
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -71,202 +137,187 @@
         }
         .pointer {
             position: absolute;
-            top: -12px;
+            top: -8px;
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 18px solid #ff007f;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 13px solid var(--accent);
             z-index: 3;
-            transform-origin: 50% 102px;
+            transform-origin: 50% 64px;
             transition: transform 3s cubic-bezier(0.15, 0.85, 0.25, 1);
         }
-        button {
-            background: linear-gradient(45deg, #ff007f, #7000ff);
-            border: none;
-            color: white;
-            padding: 12px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
+        /* Кнопки быстрого выбора шанса */
+        .chance-presets {
+            width: 100%;
+            display: flex;
+            gap: 6px;
             margin-top: 10px;
         }
-        button:disabled { opacity: 0.4; cursor: not-allowed; }
-        .lists {
-            display: flex;
-            gap: 30px;
-            width: 100%;
-            max-width: 800px;
-        }
-        .box {
+        .preset-btn {
             flex: 1;
-            background: #1e1e2e;
-            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 8px 0;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .preset-btn:active {
+            background: #2e2e46;
+            border-color: var(--neon);
+        }
+        .upgrade-btn {
+            width: 100%;
+            background: linear-gradient(45deg, var(--accent), #7000ff);
+            border: none;
+            color: white;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 0, 127, 0.4);
+        }
+        .upgrade-btn:disabled {
+            opacity: 0.4;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            width: 100%;
+            gap: 6px;
+            margin-top: 14px;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px 4px;
+            background: var(--card-bg);
+            border: none;
+            color: #aaa;
+            font-weight: bold;
             border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .tab.active {
+            background: #2c2c44;
+            color: #fff;
+            border-bottom: 2px solid var(--neon);
         }
         .grid {
+            width: 100%;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+            padding-bottom: 20px;
         }
         .card {
-            background: #28283d;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
+            background: var(--card-bg);
+            padding: 10px 6px;
+            border-radius: 10px;
             text-align: center;
             border: 1px solid transparent;
-            transition: 0.2s;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
         }
-        .card:hover { border-color: #00f0ff; }
-        .emoji { font-size: 36px; display: block; margin-bottom: 5px; }
-        .price { color: #00ff88; font-weight: bold; font-size: 14px; }
-        #status { font-size: 20px; font-weight: bold; height: 28px; margin-bottom: 10px; }
+        .card.selected {
+            border-color: var(--neon);
+            background: #252538;
+        }
+        .emoji { font-size: 28px; display: block; margin-bottom: 4px; }
+        .price { color: var(--win); font-weight: bold; font-size: 11px; display: block; margin-top: 2px; }
+        .card-btn {
+            margin-top: 6px;
+            border: none;
+            border-radius: 6px;
+            padding: 5px 4px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .buy-btn {
+            background: var(--gold);
+            color: #12121a;
+        }
+        .sell-btn {
+            background: #2e2e46;
+            color: #ff6b8b;
+            border: 1px solid #444;
+        }
     </style>
 </head>
 <body>
 
-    <h1>🧠 BRAINROT UPGRADER 🧠</h1>
-    <div id="status">Выбери свой брейнрот и цель!</div>
+    <div class="header">
+        <h1>🧠 BRAINROT UP</h1>
+        <div class="badges">
+            <div class="balance-badge">💰 <span id="balanceText">20000</span></div>
+            <div class="user-badge" id="userName">Игрок</div>
+        </div>
+    </div>
+
+    <div id="status">Выбери предмет из инвентаря и цель!</div>
 
     <div class="arena">
-        <div class="slot" id="mySlot">
-            <span>Твой предмет</span>
+        <div class="slot" id="mySlot" onclick="clearSlot('my')">
+            <span>Твой<br>брейнрот</span>
         </div>
 
         <div class="wheel-container">
             <div class="pointer" id="pointer"></div>
             <div class="wheel" id="wheel">
                 <div class="wheel-inner">
-                    <span id="chanceText" style="font-size: 24px; font-weight: bold;">0%</span>
-                    <span style="font-size: 12px; color: #aaa;">ШАНС</span>
+                    <span id="chanceText" style="font-size: 18px; font-weight: bold;">0%</span>
+                    <span style="font-size: 9px; color: #aaa;">ШАНС</span>
                 </div>
             </div>
         </div>
 
-        <div class="slot" id="targetSlot">
-            <span>Цель апгрейда</span>
+        <div class="slot" id="targetSlot" onclick="clearSlot('target')">
+            <span>Цель<br>апгрейда</span>
         </div>
     </div>
 
-    <button id="upgradeBtn" disabled onclick="startUpgrade()">АПГРЕЙДНУТЬ</button>
-
-    <div class="lists" style="margin-top: 25px;">
-        <div class="box">
-            <h3>🎒 Твой инвентарь</h3>
-            <div class="grid" id="inventoryGrid"></div>
-        </div>
-        <div class="box">
-            <h3>🎯 Каталог целей</h3>
-            <div class="grid" id="catalogGrid"></div>
-        </div>
+    <!-- Кнопки быстрого выбора шанса -->
+    <div class="chance-presets">
+        <button class="preset-btn" onclick="selectByChance(75)">~75%</button>
+        <button class="preset-btn" onclick="selectByChance(50)">~50%</button>
+        <button class="preset-btn" onclick="selectByChance(25)">~25%</button>
+        <button class="preset-btn" onclick="selectByChance(10)">~10%</button>
     </div>
+
+    <button class="upgrade-btn" id="upgradeBtn" disabled onclick="startUpgrade()">АПГРЕЙДНУТЬ</button>
+
+    <div class="tabs">
+        <button class="tab active" id="tabInv" onclick="switchTab('inv')">🎒 Инвентарь (<span id="invCount">0</span>)</button>
+        <button class="tab" id="tabCat" onclick="switchTab('cat')">🎯 Цели</button>
+        <button class="tab" id="tabShop" onclick="switchTab('shop')">🛒 Магазин</button>
+    </div>
+
+    <div class="grid" id="itemsGrid"></div>
 
     <script>
+        const tg = window.Telegram ? window.Telegram.WebApp : null;
+        if (tg) {
+            tg.expand();
+            tg.ready();
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                document.getElementById('userName').innerText = '@' + (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name);
+            }
+        }
+
         const catalog = [
-            { id: 1, name: "Скибиди Базовый", emoji: "🚽", price: 10 },
-            { id: 2, name: "Сигма Фейс", emoji: "🗿", price: 25 },
-            { id: 3, name: "Тралалело Тралала", emoji: "🦈", price: 60 },
-            { id: 4, name: "Бомбардиро Крокодило", emoji: "🐊", price: 150 },
-            { id: 5, name: "Тунг-Тунг Сахур", emoji: "🪵", price: 400 },
-            { id: 6, name: "Абсолютный Огайо", emoji: "👑", price: 1000 }
-        ];
-
-        let inventory = [
-            { ...catalog[0], uid: 101 },
-            { ...catalog[0], uid: 102 },
-            { ...catalog[1], uid: 103 }
-        ];
-
-        let selectedMy = null;
-        let selectedTarget = null;
-        let isSpinning = false;
-        let currentRotation = 0;
-
-        function render() {
-            const invGrid = document.getElementById('inventoryGrid');
-            const catGrid = document.getElementById('catalogGrid');
-            invGrid.innerHTML = '';
-            catGrid.innerHTML = '';
-
-            inventory.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `<span class="emoji">${item.emoji}</span><b>${item.name}</b><br><span class="price">${item.price} Aura</span>`;
-                div.onclick = () => { if (!isSpinning) { selectedMy = item; updateArena(); } };
-                invGrid.appendChild(div);
-            });
-
-            catalog.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `<span class="emoji">${item.emoji}</span><b>${item.name}</b><br><span class="price">${item.price} Aura</span>`;
-                div.onclick = () => { if (!isSpinning) { selectedTarget = item; updateArena(); } };
-                catGrid.appendChild(div);
-            });
-        }
-
-        function updateArena() {
-            const mySlot = document.getElementById('mySlot');
-            const targetSlot = document.getElementById('targetSlot');
-            const btn = document.getElementById('upgradeBtn');
-            const chanceText = document.getElementById('chanceText');
-            const wheel = document.getElementById('wheel');
-
-            if (selectedMy) {
-                mySlot.className = 'slot active';
-                mySlot.innerHTML = `<span class="emoji">${selectedMy.emoji}</span><b>${selectedMy.name}</b><span class="price">${selectedMy.price} Aura</span>`;
-            } else {
-                mySlot.className = 'slot';
-                mySlot.innerHTML = `<span>Твой предмет</span>`;
-            }
-
-            if (selectedTarget) {
-                targetSlot.className = 'slot active';
-                targetSlot.innerHTML = `<span class="emoji">${selectedTarget.emoji}</span><b>${selectedTarget.name}</b><span class="price">${selectedTarget.price} Aura</span>`;
-            } else {
-                targetSlot.className = 'slot';
-                targetSlot.innerHTML = `<span>Цель апгрейда</span>`;
-            }
-
-            if (selectedMy && selectedTarget && selectedTarget.price > selectedMy.price) {
-                // Формула шанса с небольшой комиссией (0.9)
-                let chance = (selectedMy.price / selectedTarget.price) * 90;
-                chance = Math.min(Math.max(chance, 1), 85).toFixed(1);
-                chanceText.innerText = chance + '%';
-                wheel.style.background = `conic-gradient(#00ff88 0% ${chance}%, #2a2a3d ${chance}% 100%)`;
-                btn.disabled = false;
-            } else {
-                chanceText.innerText = '0%';
-                wheel.style.background = `conic-gradient(#2a2a3d 0% 100%)`;
-                btn.disabled = true;
-            }
-        }
-
-        function startUpgrade() {
-            if (!selectedMy || !selectedTarget || isSpinning) return;
-            isSpinning = true;
-            document.getElementById('upgradeBtn').disabled = true;
-            document.getElementById('status').innerText = 'Крутим...';
-            document.getElementById('status').style.color = '#fff';
-
-            const chance = parseFloat(document.getElementById('chanceText').innerText);
-            const roll = Math.random() * 100;
-            const win = roll <= chance;
-
-            // Расчет угла остановки стрелки
-            const targetAngle = (roll / 100) * 360;
-            const extraSpins = 360 * 5;
-            currentRotation += extraSpins + (360 - (currentRotation % 360)) + targetAngle;
-
-            const pointer = document.getElementById('pointer');
-            pointer.style.transform = `rotate(${currentRotation}deg)`;
-
-            setTimeout(() => {
-                // Удаляем старый предмет
-                inventory = inventory.filter(i => i.uid !== selectedMy.uid);
-
-                if (win) {
-                    document.getElementById('status').innerText = `🎉 УСПЕХ! Получен: ${selectedTarget.name}`;
-                 
+            { id: 1, name: "Скибиди", emoji: "🚽", price: 100 },
+            { id: 2, name: "Сигма", emoji: "🗿", price: 250 },
+            
